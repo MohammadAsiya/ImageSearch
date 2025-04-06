@@ -156,59 +156,135 @@ OUTFIT_IMAGE_HEIGHT = 400
 BODY_SHAPE_IMAGES_FOLDER = "bodyshapeimages"
 EXAMPLE_OUTFITS_FOLDER = "examples"
 
+# --- Custom CSS Styling ---
+def set_custom_style():
+    st.markdown(f"""
+    <style>
+        /* Main background */
+        .stApp {{
+            background-color: #FFF5E6;  /* Cream background */
+        }}
+        
+        /* Headers */
+        h1, h2, h3, h4, h5, h6 {{
+            color: #D35D6E !important;  /* Soft pink */
+            font-family: 'Arial', sans-serif;
+        }}
+        
+        /* Recommendation headers */
+        .recommendation-header {{
+            color: #000000 !important;  /* Black */
+            font-family: 'Arial', sans-serif;
+        }}
+        
+        /* Buttons */
+        .stButton>button {{
+            background-color: #D35D6E;
+            color: white;
+            border-radius: 8px;
+            border: none;
+            padding: 8px 16px;
+            font-weight: 500;
+            font-family: 'Arial', sans-serif;
+        }}
+        
+        .stButton>button:hover {{
+            background-color: #C04C5D;
+            color: white;
+        }}
+        
+        /* Select boxes */
+        .stSelectbox>div>div>select {{
+            background-color: #FFF9F0;
+            border: 1px solid #D35D6E;
+            font-family: 'Arial', sans-serif;
+        }}
+        
+        /* Text elements */
+        .stMarkdown, .stText {{
+            font-family: 'Arial', sans-serif;
+        }}
+        
+        /* Custom cards */
+        .custom-card {{
+            background-color: #FFF9F0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            border-left: 4px solid #D35D6E;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }}
+        
+        /* Bullet points */
+        .custom-bullet {{
+            margin-left: 20px;
+            padding-left: 0;
+            color: #333333;  /* Dark gray for better readability */
+        }}
+        
+        .custom-bullet li {{
+            margin-bottom: 8px;
+            list-style-type: disc;
+        }}
+        
+        /* Image styling */
+        .stImage>img {{
+            border-radius: 8px;
+            border: 1px solid #FFD1DC;
+        }}
+    </style>
+    """, unsafe_allow_html=True)
+
 # --- Load Outfit Recommendations ---
 def load_recommendations():
     data = {
         "Body Shape": ["Rectangle", "Triangle", "Inverted Triangle", "Hourglass", "Apple"],
         "Fair": [
-            "Monochromatic outfits, structured blazers, straight-leg pants.",
-            "A-line skirts, wide-leg pants, off-shoulder tops.",
-            "V-neck tops, dark bottoms, fitted jackets.",
-            "Wrap dresses, belted coats, high-waisted pants.",
-            "Empire waist dresses, flowy tops, bootcut jeans."
+            ["Monochromatic outfits", "Structured blazers", "Straight-leg pants"],
+            ["A-line skirts", "Wide-leg pants", "Off-shoulder tops"],
+            ["V-neck tops", "Dark bottoms", "Fitted jackets"],
+            ["Wrap dresses", "Belted coats", "High-waisted pants"],
+            ["Empire waist dresses", "Flowy tops", "Bootcut jeans"]
         ],
         "Light": [
-            "Vertical stripes, tailored blazers, mid-rise jeans.",
-            "Peplum tops, flared skirts, cropped jackets.",
-            "Scoop neck tops, straight-leg jeans, layered necklaces.",
-            "Bodycon dresses, fitted blazers, pencil skirts.",
-            "V-neck tunics, dark leggings, long cardigans."
+            ["Vertical stripes", "Tailored blazers", "Mid-rise jeans"],
+            ["Peplum tops", "Flared skirts", "Cropped jackets"],
+            ["Scoop neck tops", "Straight-leg jeans", "Layered necklaces"],
+            ["Bodycon dresses", "Fitted blazers", "Pencil skirts"],
+            ["V-neck tunics", "Dark leggings", "Long cardigans"]
         ],
         "Medium": [
-            "Bold prints, fitted tops, straight-cut trousers.",
-            "High-waisted jeans, ruffled tops, wedge heels.",
-            "Off-shoulder tops, bootcut pants, structured bags.",
-            "Belted trench coats, fitted sweaters, knee-length skirts.",
-            "Tunic tops, wide-leg pants, long scarves."
+            ["Bold prints", "Fitted tops", "Straight-cut trousers"],
+            ["High-waisted jeans", "Ruffled tops", "Wedge heels"],
+            ["Off-shoulder tops", "Bootcut pants", "Structured bags"],
+            ["Belted trench coats", "Fitted sweaters", "Knee-length skirts"],
+            ["Tunic tops", "Wide-leg pants", "Long scarves"]
         ],
         "Tan": [
-            "Pastel colors, tailored suits, slim-fit trousers.",
-            "Wrap tops, flared jeans, statement earrings.",
-            "Deep V-necks, slim-fit pants, layered jackets.",
-            "Corset tops, high-waisted skirts, pointed heels.",
-            "Dark-wash jeans, flowy blouses, long vests."
+            ["Pastel colors", "Tailored suits", "Slim-fit trousers"],
+            ["Wrap tops", "Flared jeans", "Statement earrings"],
+            ["Deep V-necks", "Slim-fit pants", "Layered jackets"],
+            ["Corset tops", "High-waisted skirts", "Pointed heels"],
+            ["Dark-wash jeans", "Flowy blouses", "Long vests"]
         ],
         "Dark": [
-            "Bright colors, structured dresses, wide belts.",
-            "High-neck tops, pencil skirts, ankle boots.",
-            "Asymmetrical tops, skinny jeans, bold accessories.",
-            "Off-shoulder dresses, cinched waists, stilettos.",
-            "Maxi dresses, empire waist tops, draped scarves."
+            ["Bright colors", "Structured dresses", "Wide belts"],
+            ["High-neck tops", "Pencil skirts", "Ankle boots"],
+            ["Asymmetrical tops", "Skinny jeans", "Bold accessories"],
+            ["Off-shoulder dresses", "Cinched waists", "Stilettos"],
+            ["Maxi dresses", "Empire waist tops", "Draped scarves"]
         ]
     }
     return pd.DataFrame(data)
 
 # --- Image Handling Functions ---
-def load_and_resize_image(img_path, target_width, target_height, background_color=(240, 240, 240)):
+def load_and_resize_image(img_path, target_width, target_height, background_color=(255, 245, 230)):
     """Load and resize an image with padding to maintain exact dimensions"""
     try:
         if os.path.exists(img_path):
             image = Image.open(img_path)
-            # Resize while maintaining aspect ratio
             image.thumbnail((target_width, target_height))
-            # Create new blank image with target size
             new_image = Image.new("RGB", (target_width, target_height), background_color)
-            # Paste the resized image centered
             new_image.paste(
                 image,
                 (
@@ -228,14 +304,11 @@ def display_image(img_path, width, height, caption=""):
     if resized_img:
         st.image(resized_img, caption=caption, width=width)
     else:
-        # Show placeholder if image not found
-        placeholder = Image.new("RGB", (width, height), (240, 240, 240))
+        placeholder = Image.new("RGB", (width, height), (255, 245, 230))
         st.image(placeholder, caption="Image not available", width=width)
 
 # --- Get Outfit Image Path ---
 def get_outfit_image_path(body_shape, skin_tone):
-    """Get the path to the outfit image based on body shape and skin tone"""
-    # Mapping of outfit images for each combination
     outfit_images = {
         "Rectangle": {
             "Fair": f"{EXAMPLE_OUTFITS_FOLDER}/rectangle_fair.jpg",
@@ -274,24 +347,41 @@ def get_outfit_image_path(body_shape, skin_tone):
         }
     }
     
-    # Try to get specific image, fall back to generic if not found
     try:
         return outfit_images[body_shape][skin_tone]
     except KeyError:
-        # Fallback to generic body shape image if specific tone image doesn't exist
         return f"{EXAMPLE_OUTFITS_FOLDER}/{body_shape.lower()}_outfit.jpg"
+
+# --- Format Recommendations as Bullet Points ---
+def display_bullet_points(items):
+    st.markdown(f"""
+    <div class="custom-bullet">
+        {''.join([f'<li>{item}</li>' for item in items])}
+    </div>
+    """, unsafe_allow_html=True)
 
 # --- Main App ---
 def main():
-    st.title("👗 Outfit Recommendation Based on Body Shape & Skin Tone")
-    st.markdown("Select your body shape and skin tone to get personalized outfit suggestions!")
+    set_custom_style()
+    
+    # Header with elegant styling
+    st.markdown("""
+    <div style="background-color:#FFE8E8; padding:25px; border-radius:10px; margin-bottom:30px; text-align:center;">
+        <h1 style="color:#D35D6E; margin:0;">👗 Outfit Recommendation Guide</h1>
+        <p style="color:#666;">Personalized suggestions based on your body shape and skin tone</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Initialize session state
     if 'selected_shape' not in st.session_state:
         st.session_state.selected_shape = None
 
     # --- Body Shape Selection Section ---
-    st.subheader("1. Select Your Body Shape:")
+    st.markdown("""
+    <div style="background-color:#FFF9F0; padding:20px; border-radius:8px; margin-bottom:20px;">
+        <h2 style="color:#D35D6E;">1. Select Your Body Shape</h2>
+    </div>
+    """, unsafe_allow_html=True)
     
     body_shapes_info = {
         "Rectangle": f"{BODY_SHAPE_IMAGES_FOLDER}/rectangle.png",
@@ -301,33 +391,34 @@ def main():
         "Apple": f"{BODY_SHAPE_IMAGES_FOLDER}/apple.png"
     }
     
-    # Create columns for body shape selection
     cols = st.columns(len(body_shapes_info))
     for i, (shape, img_path) in enumerate(body_shapes_info.items()):
         with cols[i]:
-            # Display consistently sized body shape images
-            display_image(
-                img_path, 
-                BODY_SHAPE_IMAGE_WIDTH, 
-                BODY_SHAPE_IMAGE_HEIGHT,
-                shape
-            )
+            display_image(img_path, BODY_SHAPE_IMAGE_WIDTH, BODY_SHAPE_IMAGE_HEIGHT, shape)
             if st.button(shape, key=f"btn_{shape}"):
                 st.session_state.selected_shape = shape
 
-    # Show current selection
     if st.session_state.selected_shape:
-        st.success(f"Selected: {st.session_state.selected_shape}")
+        st.markdown(f"""
+        <div style="background-color:#FFE8E8; padding:12px; border-radius:8px; margin:15px 0;">
+            <p style="color:#D35D6E; font-weight:bold; margin:0;">Selected: {st.session_state.selected_shape}</p>
+        </div>
+        """, unsafe_allow_html=True)
     else:
         st.warning("Please select a body shape")
 
     # --- Skin Tone Selection ---
-    st.subheader("2. Select Your Skin Tone:")
+    st.markdown("""
+    <div style="background-color:#FFF9F0; padding:20px; border-radius:8px; margin-bottom:20px;">
+        <h2 style="color:#D35D6E;">2. Select Your Skin Tone</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
     skin_tones = ["Fair", "Light", "Medium", "Tan", "Dark"]
     selected_tone = st.selectbox("Choose your skin tone:", skin_tones, key="skin_tone")
 
     # --- Get Recommendations ---
-    if st.button("Get Outfit Recommendations"):
+    if st.button("Get Outfit Recommendations", key="recommend_btn"):
         if not st.session_state.selected_shape:
             st.error("Please select a body shape first!")
             return
@@ -337,46 +428,68 @@ def main():
         
         if not shape_row.empty:
             try:
-                recommendation = shape_row[selected_tone].values[0]
-                st.subheader(f"✨ Recommendations for {st.session_state.selected_shape} Body & {selected_tone} Skin:")
-                st.write(recommendation)
-
-                # --- Example Outfits Section ---
-                st.subheader("🎯 Example Outfit:")
+                recommendation_list = shape_row[selected_tone].values[0]
                 
-                # Get the specific outfit image for this combination
-                outfit_path = get_outfit_image_path(st.session_state.selected_shape, selected_tone)
-                
-                # Display the example outfit with larger consistent size
-                display_image(
-                    outfit_path,
-                    OUTFIT_IMAGE_WIDTH,
-                    OUTFIT_IMAGE_HEIGHT,
-                    f"Example outfit for {st.session_state.selected_shape} shape and {selected_tone} skin tone"
-                )
-                
-                # Additional styling tips
-                st.subheader("💡 Styling Tips:")
+                # Recommendations in bullet points
                 st.markdown("""
-                - Choose colors that complement your skin tone
-                - Select patterns and fabrics that flatter your body shape
-                - Consider your occasion when choosing outfits
-                - Always ensure proper fit for your body type
-                """)
+                <div class="custom-card">
+                    <h3 class="recommendation-header">✨ Recommended Outfits</h3>
+                </div>
+                """, unsafe_allow_html=True)
                 
-                # Color palette recommendation based on skin tone
-                st.subheader("🎨 Recommended Color Palette:")
+                display_bullet_points(recommendation_list)
+
+                # Example Outfit
+                st.markdown("""
+                <div style="background-color:#FFF9F0; padding:20px; border-radius:8px; margin:20px 0;">
+                    <h2 style="color:#D35D6E;">🎯 Example Outfit</h2>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                outfit_path = get_outfit_image_path(st.session_state.selected_shape, selected_tone)
+                col1, col2, col3 = st.columns([1, 2, 1])
+                with col2:
+                    display_image(
+                        outfit_path,
+                        OUTFIT_IMAGE_WIDTH,
+                        OUTFIT_IMAGE_HEIGHT,
+                        f"Example for {st.session_state.selected_shape} shape and {selected_tone} skin tone"
+                    )
+                
+                # Styling Tips
+                st.markdown("""
+                <div class="custom-card">
+                    <h3 class="recommendation-header">💡 Styling Tips</h3>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                styling_tips = [
+                    "Choose colors that complement your skin tone",
+                    "Select patterns and fabrics that flatter your body shape",
+                    "Consider your occasion when choosing outfits",
+                    "Always ensure proper fit for your body type"
+                ]
+                display_bullet_points(styling_tips)
+                
+                # Color Palette
                 color_palettes = {
-                    "Fair": "Soft pastels, cool blues, light pinks, and mint greens",
-                    "Light": "Dusty roses, warm taupes, soft corals, and sage greens",
-                    "Medium": "Rich jewel tones, warm reds, deep greens, and golden yellows",
-                    "Tan": "Earth tones, warm oranges, deep browns, and olive greens",
-                    "Dark": "Vibrant colors, royal blues, deep purples, and bright whites"
+                    "Fair": ["Soft pastels", "Cool blues", "Light pinks", "Mint greens"],
+                    "Light": ["Dusty roses", "Warm taupes", "Soft corals", "Sage greens"],
+                    "Medium": ["Rich jewel tones", "Warm reds", "Deep greens", "Golden yellows"],
+                    "Tan": ["Earth tones", "Warm oranges", "Deep browns", "Olive greens"],
+                    "Dark": ["Vibrant colors", "Royal blues", "Deep purples", "Bright whites"]
                 }
-                st.write(color_palettes.get(selected_tone, "Various colors that complement your skin tone"))
                 
-            except KeyError:
-                st.error(f"No recommendations available for {selected_tone} skin tone.")
+                palette = color_palettes.get(selected_tone, ["Various colors that complement your skin tone"])
+                
+                st.markdown("""
+                <div class="custom-card">
+                    <h3 class="recommendation-header">🎨 Recommended Color Palette</h3>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                display_bullet_points(palette)
+                
             except Exception as e:
                 st.error(f"An error occurred: {str(e)}")
         else:
