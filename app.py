@@ -226,25 +226,63 @@ def display_image(img_path, width, height, caption=""):
     """Display an image with consistent sizing"""
     resized_img = load_and_resize_image(img_path, width, height)
     if resized_img:
-        st.image(resized_img, caption=caption, width=width)  # Removed use_column_width
+        st.image(resized_img, caption=caption, width=width)
     else:
         # Show placeholder if image not found
         placeholder = Image.new("RGB", (width, height), (240, 240, 240))
-        st.image(placeholder, caption="Image not available", width=width)  # Removed use_column_width
+        st.image(placeholder, caption="Image not available", width=width)
+
+# --- Get Outfit Image Path ---
+def get_outfit_image_path(body_shape, skin_tone):
+    """Get the path to the outfit image based on body shape and skin tone"""
+    # Mapping of outfit images for each combination
+    outfit_images = {
+        "Rectangle": {
+            "Fair": f"{EXAMPLE_OUTFITS_FOLDER}/rectangle_fair.jpg",
+            "Light": f"{EXAMPLE_OUTFITS_FOLDER}/rectangle_light.jpg",
+            "Medium": f"{EXAMPLE_OUTFITS_FOLDER}/rectangle_medium.jpg",
+            "Tan": f"{EXAMPLE_OUTFITS_FOLDER}/rectangle_tan.jpg",
+            "Dark": f"{EXAMPLE_OUTFITS_FOLDER}/rectangle_dark.jpg"
+        },
+        "Triangle": {
+            "Fair": f"{EXAMPLE_OUTFITS_FOLDER}/triangle_fair.jpg",
+            "Light": f"{EXAMPLE_OUTFITS_FOLDER}/triangle_light.jpg",
+            "Medium": f"{EXAMPLE_OUTFITS_FOLDER}/triangle_medium.jpg",
+            "Tan": f"{EXAMPLE_OUTFITS_FOLDER}/triangle_tan.jpg",
+            "Dark": f"{EXAMPLE_OUTFITS_FOLDER}/triangle_dark.jpg"
+        },
+        "Inverted Triangle": {
+            "Fair": f"{EXAMPLE_OUTFITS_FOLDER}/inverted_fair.jpg",
+            "Light": f"{EXAMPLE_OUTFITS_FOLDER}/inverted_light.jpg",
+            "Medium": f"{EXAMPLE_OUTFITS_FOLDER}/inverted_medium.jpg",
+            "Tan": f"{EXAMPLE_OUTFITS_FOLDER}/inverted_tan.jpg",
+            "Dark": f"{EXAMPLE_OUTFITS_FOLDER}/inverted_dark.jpg"
+        },
+        "Hourglass": {
+            "Fair": f"{EXAMPLE_OUTFITS_FOLDER}/hourglass_fair.jpg",
+            "Light": f"{EXAMPLE_OUTFITS_FOLDER}/hourglass_light.jpg",
+            "Medium": f"{EXAMPLE_OUTFITS_FOLDER}/hourglass_medium.jpg",
+            "Tan": f"{EXAMPLE_OUTFITS_FOLDER}/hourglass_tan.jpg",
+            "Dark": f"{EXAMPLE_OUTFITS_FOLDER}/hourglass_dark.jpg"
+        },
+        "Apple": {
+            "Fair": f"{EXAMPLE_OUTFITS_FOLDER}/apple_fair.jpg",
+            "Light": f"{EXAMPLE_OUTFITS_FOLDER}/apple_light.jpg",
+            "Medium": f"{EXAMPLE_OUTFITS_FOLDER}/apple_medium.jpg",
+            "Tan": f"{EXAMPLE_OUTFITS_FOLDER}/apple_tan.jpg",
+            "Dark": f"{EXAMPLE_OUTFITS_FOLDER}/apple_dark.jpg"
+        }
+    }
+    
+    # Try to get specific image, fall back to generic if not found
+    try:
+        return outfit_images[body_shape][skin_tone]
+    except KeyError:
+        # Fallback to generic body shape image if specific tone image doesn't exist
+        return f"{EXAMPLE_OUTFITS_FOLDER}/{body_shape.lower()}_outfit.jpg"
 
 # --- Main App ---
 def main():
-    # Add this at the start of your main() function
-    # Debug - Check if folders exist
-    #st.write("Checking folders...")
-    #st.write(f"Body shape images folder exists: {os.path.exists(BODY_SHAPE_IMAGES_FOLDER)}")
-    #st.write(f"Example outfits folder exists: {os.path.exists(EXAMPLE_OUTFITS_FOLDER)}")
-    
-    # Debug - List files in folders
-    #if os.path.exists(BODY_SHAPE_IMAGES_FOLDER):
-    #   st.write("Body shape images:", os.listdir(BODY_SHAPE_IMAGES_FOLDER))
-    #if os.path.exists(EXAMPLE_OUTFITS_FOLDER):
-    #    st.write("Example outfits:", os.listdir(EXAMPLE_OUTFITS_FOLDER))
     st.title("👗 Outfit Recommendation Based on Body Shape & Skin Tone")
     st.markdown("Select your body shape and skin tone to get personalized outfit suggestions!")
 
@@ -304,33 +342,39 @@ def main():
                 st.write(recommendation)
 
                 # --- Example Outfits Section ---
-                st.subheader("🎯 Example Outfits:")
+                st.subheader("🎯 Example Outfit:")
                 
-                # Dictionary mapping body shapes to example outfit images
-                example_outfits = {
-                    "Rectangle": f"{EXAMPLE_OUTFITS_FOLDER}/rectangle_outfit.jpg",
-                    "Triangle": f"{EXAMPLE_OUTFITS_FOLDER}/triangle_outfit.jpg",
-                    "Inverted Triangle": f"{EXAMPLE_OUTFITS_FOLDER}/inverted_outfit.jpg",
-                    "Hourglass": f"{EXAMPLE_OUTFITS_FOLDER}/hourglass_outfit.jpg",
-                    "Apple": f"{EXAMPLE_OUTFITS_FOLDER}/apple_outfit.jpg"
-                }
+                # Get the specific outfit image for this combination
+                outfit_path = get_outfit_image_path(st.session_state.selected_shape, selected_tone)
                 
                 # Display the example outfit with larger consistent size
-                outfit_path = example_outfits.get(st.session_state.selected_shape)
                 display_image(
                     outfit_path,
                     OUTFIT_IMAGE_WIDTH,
                     OUTFIT_IMAGE_HEIGHT,
-                    f"Example outfit for {st.session_state.selected_shape} shape"
+                    f"Example outfit for {st.session_state.selected_shape} shape and {selected_tone} skin tone"
                 )
                 
                 # Additional styling tips
                 st.subheader("💡 Styling Tips:")
                 st.markdown("""
-                - Pair with neutral accessories for a balanced look
-                - Consider your occasion when choosing fabrics
+                - Choose colors that complement your skin tone
+                - Select patterns and fabrics that flatter your body shape
+                - Consider your occasion when choosing outfits
                 - Always ensure proper fit for your body type
                 """)
+                
+                # Color palette recommendation based on skin tone
+                st.subheader("🎨 Recommended Color Palette:")
+                color_palettes = {
+                    "Fair": "Soft pastels, cool blues, light pinks, and mint greens",
+                    "Light": "Dusty roses, warm taupes, soft corals, and sage greens",
+                    "Medium": "Rich jewel tones, warm reds, deep greens, and golden yellows",
+                    "Tan": "Earth tones, warm oranges, deep browns, and olive greens",
+                    "Dark": "Vibrant colors, royal blues, deep purples, and bright whites"
+                }
+                st.write(color_palettes.get(selected_tone, "Various colors that complement your skin tone"))
+                
             except KeyError:
                 st.error(f"No recommendations available for {selected_tone} skin tone.")
             except Exception as e:
